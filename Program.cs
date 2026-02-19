@@ -1,2 +1,56 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Microsoft.Data.SqlClient;
+using Dapper;
+
+
+
+using var connection = new SqlConnection("Server=localhost,1433;Database=Exempelbase;User ID=sa;Password=Lösenord!;Encrypt=True;TrustServerCertificate=True;");
+
+connection.Open();
+
+var sql = @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Authors')
+            CREATE TABLE Authors(
+            Id INT IDENTITY PRIMARY KEY,
+            Name NVARCHAR(100) UNIQUE NOT NULL
+            );";
+
+connection.Execute(sql);
+
+if (args.Length > 0 && (args[0] == "list" && args[1] == "authors" || args[0] == "l" && args[1] == "a"))
+{
+    var authors = connection.Query<string>("SELECT Name FROM Authors");
+    foreach (var auth in authors)
+    {
+        Console.WriteLine("All authors: " + auth);
+
+    }
+}
+
+if (args.Length > 0 && (args[0] == "add" && args[1] == "author" || args[0] == "a" && args[1] == "a"))
+{
+    if (args.Length < 2)
+    {
+        Console.WriteLine("Skriv add author 'name' eller a a 'name' för att lägga till. ");
+    }
+
+    var author = args[2];
+    sql = @"
+        INSERT INTO Authors(Name)
+        VALUES(@Name)";
+
+    connection.Execute(sql, new { Name = author });
+    Console.WriteLine($"Författaren {author} har lagts till.");
+}
+if (args.Length > 0 && (args[0] == "remove" && args[1] == "author" || args[0] == "r" && args[1] == "a"))
+{
+    var author = args[2];
+    var rows = connection.Execute("DELETE FROM Authors WHERE Name = @Name", new { Name = author });
+    if (rows == 0)
+    {
+        Console.WriteLine("Kunde inte hitta någon med det namnet");
+    }
+    else
+    {
+        Console.WriteLine($"Författaren: {author} har tagits bort. ");
+    }
+
+}
