@@ -1,0 +1,5 @@
+C:\Webbutv. frontend med HTML5 + CSS + javascript\Databaser\Databaser\SQL skapa databas i C#\MSSQL-test\MSSQL-test\obj\Debug\net9.0\MSSQL-test.GeneratedMSBuildEditorConfig.editorconfig
+C:\Webbutv. frontend med HTML5 + CSS + javascript\Databaser\Databaser\SQL skapa databas i C#\MSSQL-test\MSSQL-test\obj\Debug\net9.0\MSSQL-test.AssemblyInfoInputs.cache
+C:\Webbutv. frontend med HTML5 + CSS + javascript\Databaser\Databaser\SQL skapa databas i C#\MSSQL-test\MSSQL-test\obj\Debug\net9.0\MSSQL-test.AssemblyInfo.cs
+C:\Webbutv. frontend med HTML5 + CSS + javascript\Databaser\Databaser\SQL skapa databas i C#\MSSQL-test\MSSQL-test\obj\Debug\net9.0\MSSQL-test.csproj.CoreCompileInputs.cache
+C:\Webbutv. frontend med HTML5 + CSS + javascript\Databaser\Databaser\SQL skapa databas i C#\MSSQL-test\MSSQL-test\obj\Debug\net9.0\MSSQL-test.sourcelink.json
