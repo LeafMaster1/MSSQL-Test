@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Dapper;
+using System.Security.Cryptography.X509Certificates;
 
 
 
@@ -22,6 +23,14 @@ connection.Execute(sql);
 
 connection.Execute(sql);
 
+sql = @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'BookAuthors')
+CREATE TABLE BookAuthors(
+AuthorId INT NOT NULL FOREIGN KEY REFERENCES Authors(Id) ON DELETE CASCADE,
+BookId INT NOT NULL FOREIGN KEY REFERENCES Book(Id) ON DELETE CASCADE,
+PRIMARY KEY (AuthorId, BookId)
+);"    
+;
+connection.Execute(sql);
 if (args.Length > 0 && (args[0] == "list" && args[1] == "authors" || args[0] == "l" && args[1] == "a"))
 {
     var authors = connection.Query<string>("SELECT Name FROM Authors");
@@ -100,6 +109,39 @@ if (args.Length > 0 && (args[0] == "remove" && args[1] == "book" || args[0] == "
     {
         Console.WriteLine($"Titeln: {book} har tagits bort. ");
     }
+}
+    if (args.Length >= 6 &&
+    ((args[0] == "modify" && args[1] == "author") ||
+     (args[0] == "m" && args[1] == "a")))
+    { 
+    var authorName = args[2];
+    var action = args[3];
+    var target = args[4];
+    var bookName = args[5];
 
+    if ((action == "add" || action == "a") &&
+        (target == "book" || target == "b"))
+    {
+        var authorId = connection.QuerySingleOrDefault<int?>(
+            "SELECT Id FROM Authors WHERE Name = @name",
+            new { name = authorName });
+        if(authorId == null)
+        {
+            Console.WriteLine($"Author {authorName} not found ");
+            return;
+        }
+        var bookId = connection.QuerySingleOrDefault<int?>(
+            "SELECT Id FROM Book WHERE Titel = @titel",
+            new { titel = bookName });
+
+        connection.Execute(@"
+        IF NOT EXISTS(SELECT * FROM BookAuthors WHERE AuthorId = @author AND BookId = @book)
+        INSERT INTO BookAuthors(AuthorId, BookId)
+        VALUES(@author, @book)", new { author = authorId, book = bookId });
+        
+        Console.WriteLine($"{authorName} länkades med {bookName}");
+ 
+    }
+    
 
 }
