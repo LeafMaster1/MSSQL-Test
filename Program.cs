@@ -13,6 +13,12 @@ var sql = @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Authors')
             Name NVARCHAR(100) UNIQUE NOT NULL
 
             );";
+connection.Execute(sql);
+    sql = @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Book')
+    CREATE TABLE Book(
+    Id INT IDENTITY (1,1) PRIMARY KEY,
+    Titel NVARCHAR(100) UNIQUE NOT NULL
+    );";
 
 connection.Execute(sql);
 
@@ -53,5 +59,47 @@ if (args.Length > 0 && (args[0] == "remove" && args[1] == "author" || args[0] ==
     {
         Console.WriteLine($"Författaren: {author} har tagits bort. ");
     }
+
+
+}
+    if (args.Length > 0 && (args[0] == "add" && args[1] == "book" || args[0] == "a" && args[1] == "b"))
+    {
+        if (args.Length < 2)
+        {
+            Console.WriteLine("Skriv add book 'book' eller a b 'book' för att lägga till bok sedan skriv titel. ");
+        }
+
+
+        var book = args[2];
+        sql = @"
+        INSERT INTO Book(Titel)
+        VALUES(@Titel)";
+
+        connection.Execute(sql, new { Titel = book });
+        Console.WriteLine($"Titel på {book} har lagts till.");
+    }
+if (args.Length > 0 && (args[0] == "list" && args[1] == "book" || args[0] == "l"  &&  args[1] == "b"))
+{
+    var book = connection.Query<string>("SELECT Titel FROM Book");
+    foreach (var books in book)
+    {
+        Console.WriteLine("All Books: " + books);
+    }
+
+
+}
+if (args.Length > 0 && (args[0] == "remove" && args[1] == "book" || args[0] == "r" && args[1] == "b"))
+{
+    var book = args[2];
+    var rows = connection.Execute("DELETE FROM Book WHERE Titel = @Titel", new { Titel = book });
+    if (rows == 0)
+    {
+        Console.WriteLine("Kunde inte hitta någon med det titeln");
+    }
+    else
+    {
+        Console.WriteLine($"Titeln: {book} har tagits bort. ");
+    }
+
 
 }
