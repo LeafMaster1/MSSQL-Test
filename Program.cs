@@ -110,14 +110,15 @@ if (args.Length > 0 && (args[0] == "remove" && args[1] == "book" || args[0] == "
         Console.WriteLine($"Titeln: {book} har tagits bort. ");
     }
 }
-    if (args.Length >= 6 &&
-    ((args[0] == "modify" && args[1] == "author") ||
-     (args[0] == "m" && args[1] == "a")))
-    { 
-    var authorName = args[2];
-    var action = args[3];
-    var target = args[4];
-    var bookName = args[5];
+
+if (args.Length >= 6 &&
+((args[0] == "modify" || args[0] == "m") &&
+    (args[1] == "author" || args[1] == "a")))
+{ 
+var authorName = args[2];
+var action = args[3];
+var target = args[4];
+var bookName = args[5];
 
     if ((action == "add" || action == "a") &&
         (target == "book" || target == "b"))
@@ -135,13 +136,10 @@ if (args.Length > 0 && (args[0] == "remove" && args[1] == "book" || args[0] == "
             new { titel = bookName });
 
         connection.Execute(@"
-        IF NOT EXISTS(SELECT * FROM BookAuthors WHERE AuthorId = @author AND BookId = @book)
         INSERT INTO BookAuthors(AuthorId, BookId)
         VALUES(@author, @book)", new { author = authorId, book = bookId });
         
         Console.WriteLine($"{authorName} länkades med {bookName}");
- 
     }
     
-
 }
