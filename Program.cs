@@ -9,8 +9,9 @@ connection.Open();
 
 var sql = @"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Authors')
             CREATE TABLE Authors(
-            Id INT IDENTITY PRIMARY KEY,
+            Id INT IDENTITY (1,1) PRIMARY KEY,
             Name NVARCHAR(100) UNIQUE NOT NULL
+
             );";
 
 connection.Execute(sql);
