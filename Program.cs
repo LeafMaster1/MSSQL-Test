@@ -114,23 +114,27 @@ if (args.Length > 0 && (args[0] == "remove" && args[1] == "book" || args[0] == "
 if (args.Length >= 6 &&
 ((args[0] == "modify" || args[0] == "m") &&
     (args[1] == "author" || args[1] == "a")))
-{ 
-var authorName = args[2];
-var action = args[3];
-var target = args[4];
-var bookName = args[5];
+{
+    var authorName = args[2];
+    var action = args[3].ToLower();
+    var target = args[4].ToLower();
+    var bookName = args[5];
+
+
 
     if ((action == "add" || action == "a") &&
         (target == "book" || target == "b"))
     {
+        // hämtar authorId
         var authorId = connection.QuerySingleOrDefault<int?>(
             "SELECT Id FROM Authors WHERE Name = @name",
             new { name = authorName });
-        if(authorId == null)
+        if (authorId == null)
         {
             Console.WriteLine($"Author {authorName} not found ");
             return;
         }
+        // hämtar bookId
         var bookId = connection.QuerySingleOrDefault<int?>(
             "SELECT Id FROM Book WHERE Titel = @titel",
             new { titel = bookName });
@@ -138,9 +142,44 @@ var bookName = args[5];
         connection.Execute(@"
         INSERT INTO BookAuthors(AuthorId, BookId)
         VALUES(@author, @book)", new { author = authorId, book = bookId });
-        
+
         Console.WriteLine($"{authorName} länkades med {bookName}");
         Console.WriteLine("HEJ");
+    
+    }
+
+    if ((action == "remove" || action == "r") &&
+       (target == "book" || target == "b"))
+    {
+        // hämtar authorId
+        var authorId = connection.QuerySingleOrDefault<int?>(
+            "SELECT Id FROM Authors WHERE Name = @name",
+            new { name = authorName });
+        if (authorId == null)
+        {
+            Console.WriteLine($"Author {authorName} not found ");
+            return;
+        }
+
+        // hämtar bookId
+        var bookId = connection.QuerySingleOrDefault<int?>(
+            "SELECT Id FROM Book WHERE Titel = @titel",
+            new { titel = bookName});
+
+        var rows = connection.Execute(
+            "DELETE FROM BookAuthors WHERE BookId = @BookId AND AuthorId = @AuthorId",
+            new { BookId = bookId, AuthorId = authorId }
+            );
+        if (rows == 0)
+        {
+            Console.WriteLine($" Kopplingen mellan '{authorName}' och '{bookName}' finns inte!");
+        }
+        else
+        {
+            Console.WriteLine($"Tog bort '{bookName}' från '{authorName}'");
+        }
+
+
     }
     
 }
