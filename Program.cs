@@ -140,6 +140,7 @@ var bookName = args[5];
         VALUES(@author, @book)", new { author = authorId, book = bookId });
         
         Console.WriteLine($"{authorName} länkades med {bookName}");
+        Console.WriteLine("HEJ");
     }
     
 }
